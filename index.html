@@ -1,216 +1,147 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Nyx AI — আপনার নিজের এআই</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#07060d; --panel:rgba(255,255,255,.045); --line:rgba(255,255,255,.09);
-  --text:#ecebf5; --mute:#8b88a3; --a1:#8b5cf6; --a2:#22d3ee; --a3:#f472b6;
-  --grad:linear-gradient(135deg,var(--a1),var(--a2));
-}
-:root[data-theme="light"]{
-  --bg:#f3f2fa; --panel:rgba(255,255,255,.7); --line:rgba(20,10,60,.1);
-  --text:#17142b; --mute:#6b6885;
-}
-*{box-sizing:border-box;margin:0}
-html,body{height:100%}
-body{
-  font-family:'Hind Siliguri','Noto Sans Bengali',system-ui,sans-serif;
-  background:var(--bg);color:var(--text);overflow:hidden;
-  padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);
-}
-.orb{position:fixed;border-radius:50%;filter:blur(90px);opacity:.35;pointer-events:none;z-index:0}
-.o1{width:380px;height:380px;background:var(--a1);top:-120px;left:-100px;animation:drift 18s ease-in-out infinite alternate}
-.o2{width:320px;height:320px;background:var(--a2);bottom:-120px;right:-80px;animation:drift 22s ease-in-out infinite alternate-reverse}
-.o3{width:220px;height:220px;background:var(--a3);top:45%;left:55%;opacity:.18;animation:drift 26s ease-in-out infinite alternate}
-@keyframes drift{to{transform:translate(60px,40px) scale(1.15)}}
-
-.app{position:relative;z-index:1;max-width:860px;height:100%;margin:0 auto;display:flex;flex-direction:column;padding:0 14px}
-header{display:flex;align-items:center;gap:12px;padding:16px 4px 12px}
-.logo{width:42px;height:42px;border-radius:14px;background:var(--grad);display:grid;place-items:center;
-  font:700 20px 'Space Grotesk',sans-serif;color:#fff;box-shadow:0 8px 28px -6px var(--a1)}
-.title{flex:1}
-.title h1{font:700 18px 'Space Grotesk','Hind Siliguri',sans-serif;letter-spacing:.2px}
-.status{font-size:12.5px;color:var(--mute);display:flex;align-items:center;gap:6px}
-.dot{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 0 0 #34d39988;animation:pulse 2s infinite}
-@keyframes pulse{70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
-.icon-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:var(--panel);
-  color:var(--text);cursor:pointer;font-size:16px;backdrop-filter:blur(12px);transition:transform .15s,border-color .15s}
-.icon-btn:hover{border-color:var(--a1);transform:translateY(-1px)}
-button:focus-visible,textarea:focus-visible{outline:2px solid var(--a2);outline-offset:2px}
-
-#chat{flex:1;overflow-y:auto;padding:8px 2px 16px;scroll-behavior:smooth}
-#chat::-webkit-scrollbar{width:6px}#chat::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px}
-
-.welcome{text-align:center;padding:9vh 10px 0}
-.welcome h2{font:700 clamp(26px,5vw,38px)/1.25 'Hind Siliguri',sans-serif;
-  background:linear-gradient(120deg,var(--text) 30%,var(--a2),var(--a1));-webkit-background-clip:text;background-clip:text;color:transparent}
-.welcome p{color:var(--mute);margin:10px 0 26px;font-size:15.5px}
-.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
-.chip{padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--text);
-  font:500 14px 'Hind Siliguri',sans-serif;cursor:pointer;backdrop-filter:blur(12px);transition:.2s}
-.chip:hover{border-color:var(--a1);background:rgba(139,92,246,.14)}
-
-.msg{display:flex;gap:10px;margin:14px 0;max-width:100%}
-.msg.user{flex-direction:row-reverse}
-.av{flex:none;width:32px;height:32px;border-radius:11px;display:grid;place-items:center;font:700 13px 'Space Grotesk',sans-serif;color:#fff;background:var(--grad)}
-.msg.user .av{background:var(--panel);border:1px solid var(--line);color:var(--text)}
-.bubble{position:relative;padding:12px 16px;border-radius:18px;line-height:1.7;font-size:15.5px;max-width:min(82%,640px);
-  word-wrap:break-word;overflow-wrap:anywhere}
-.msg.bot .bubble{background:var(--panel);border:1px solid var(--line);border-top-left-radius:6px;backdrop-filter:blur(14px)}
-.msg.user .bubble{background:var(--grad);color:#fff;border-top-right-radius:6px;box-shadow:0 10px 30px -12px var(--a1)}
-.bubble.err{border-color:#f8717199}
-.bubble p{margin:0 0 .6em}.bubble p:last-child{margin:0}
-.bubble code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;background:rgba(139,92,246,.18);padding:1px 6px;border-radius:6px}
-.bubble pre{margin:.7em 0;background:#0b0a14;color:#e6e4f5;border:1px solid var(--line);border-radius:12px;overflow-x:auto;padding:14px;position:relative}
-.bubble pre code{background:none;padding:0;color:inherit}
-.copy{position:absolute;top:6px;right:6px;font:500 12px 'Hind Siliguri',sans-serif;padding:3px 9px;border-radius:8px;
-  border:1px solid var(--line);background:rgba(255,255,255,.06);color:#cfcde6;cursor:pointer}
-.tools{display:flex;gap:6px;margin-top:8px;opacity:0;transition:.2s}
-.msg:hover .tools,.msg:focus-within .tools{opacity:1}
-.tools button{font:500 12px 'Hind Siliguri',sans-serif;color:var(--mute);background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:6px}
-.tools button:hover{color:var(--text);background:var(--panel)}
-@media (hover:none){.tools{opacity:1}}
-
-.typing{display:flex;gap:5px;padding:6px 2px}
-.typing i{width:8px;height:8px;border-radius:50%;background:var(--a2);animation:bounce 1.1s infinite}
-.typing i:nth-child(2){animation-delay:.15s;background:var(--a1)}.typing i:nth-child(3){animation-delay:.3s;background:var(--a3)}
-@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-6px);opacity:1}}
-
-.composer{padding:8px 0 14px}
-.box{display:flex;align-items:flex-end;gap:8px;padding:8px 8px 8px 16px;border-radius:22px;border:1px solid var(--line);
-  background:var(--panel);backdrop-filter:blur(18px);transition:border-color .2s,box-shadow .2s}
-.box:focus-within{border-color:var(--a1);box-shadow:0 0 0 4px rgba(139,92,246,.16)}
-textarea{flex:1;resize:none;border:none;outline:none;background:none;color:var(--text);
-  font:500 16px/1.6 'Hind Siliguri',sans-serif;max-height:160px;padding:7px 0}
-textarea::placeholder{color:var(--mute)}
-#send{width:44px;height:44px;flex:none;border:none;border-radius:15px;background:var(--grad);color:#fff;font-size:18px;
-  cursor:pointer;transition:transform .15s,opacity .2s;box-shadow:0 8px 22px -8px var(--a1)}
-#send:hover{transform:scale(1.06)}#send:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.hint{text-align:center;color:var(--mute);font-size:12px;margin-top:8px}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
-@media (max-width:520px){.bubble{max-width:88%}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nyx AI — আপনার নিজের এআই সহকারী</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: radial-gradient(circle at center, #1a0b2e 0%, #0d0614 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .chat-bubble-ai {
+            background: linear-gradient(135deg, #2b1055 0%, #7597de 100%);
+        }
+        .chat-bubble-user {
+            background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+        }
+    </style>
 </head>
-<body>
-<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+<body class="flex flex-col h-screen justify-between">
+    <!-- Header -->
+    <header class="flex items-center justify-between p-4 border-b border-gray-800 bg-opacity-50 backdrop-blur-md">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center font-bold text-lg justify-center shadow-lg">N</div>
+            <div>
+                <h1 class="font-bold text-lg">Nyx AI</h1>
+                <p class="text-xs text-green-400 flex items-center"><span class="w-2 h-2 bg-green-500 rounded-full inline-block mr-1"></span> অনলাইন</p>
+            </div>
+        </div>
+    </header>
 
-<div class="app">
-  <header>
-    <div class="logo">N</div>
-    <div class="title"><h1>Nyx AI</h1><div class="status"><span class="dot"></span><span id="statusTxt">অনলাইন</span></div></div>
-    <button class="icon-btn" id="themeBtn" title="থিম বদলান" aria-label="থিম বদলান">🌓</button>
-    <button class="icon-btn" id="clearBtn" title="নতুন চ্যাট" aria-label="নতুন চ্যাট">🗑</button>
-  </header>
-
-  <main id="chat" aria-live="polite"></main>
-
-  <div class="composer">
-    <div class="box">
-      <textarea id="userInput" rows="1" placeholder="এআই-কে কিছু জিজ্ঞেস করুন..." aria-label="আপনার বার্তা"></textarea>
-      <button id="send" aria-label="পাঠান">➤</button>
+    <!-- Chat Container -->
+    <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4">
+        <!-- Initial Greeting -->
+        <div class="flex items-start space-x-2">
+            <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold text-sm">N</div>
+            <div class="chat-bubble-ai p-3 rounded-2xl max-w-xs md:max-w-md text-sm shadow-md">
+                হ্যালো! আমি Nyx AI। আজ আপনাকে কীভাবে সাহায্য করতে পারি?
+            </div>
+        </div>
     </div>
-    <div class="hint">Enter চাপলে পাঠাবে · নতুন লাইনের জন্য Shift + Enter</div>
-  </div>
-</div>
 
-<script>
-// আপনার ক্লাউডফ্লায়ার ওয়ার্কারের লিংকটি এখানে বসানো হলো
-const workerUrl = 'https://nyx-ai-core.eabcd22334.workers.dev';
+    <!-- Input Area -->
+    <div class="p-4 border-t border-gray-800 bg-opacity-50 backdrop-blur-md">
+        <div class="flex items-center space-x-2 bg-gray-900 border border-gray-700 rounded-full px-4 py-2 shadow-inner">
+            <input type="text" id="user-input" placeholder="এআই-কে কিছু জিজ্ঞেস করুন..." class="flex-1 bg-transparent border-none outline-none text-white text-sm placeholder-gray-400">
+            <button onclick="sendMessage()" class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-2 rounded-full hover:opacity-90 transition shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+            </button>
+        </div>
+    </div>
 
-const SUGGESTIONS = ['আমাকে একটি মজার গল্প বলো','জাভাস্ক্রিপ্টে একটি ক্যালকুলেটর লিখে দাও','ইংরেজি ইমেইল লেখা শেখাও','আজকের জন্য একটি প্রোডাক্টিভিটি টিপস দাও'];
-const chat = document.getElementById('chat'), input = document.getElementById('userInput'), sendBtn = document.getElementById('send');
-let history = [], busy = false;
+    <script>
+        const workerUrl = 'https://nyx-ai-core.eabcd22334.workers.dev';
 
-try{ const t = localStorage.getItem('nyx-theme'); if(t) document.documentElement.dataset.theme = t; }catch(e){}
+        async function sendMessage() {
+            const inputField = document.getElementById('user-input');
+            const chatContainer = document.getElementById('chat-container');
+            const prompt = inputField.value.trim();
 
-const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function md(text){
-  const blocks = [];
-  let s = esc(text).replace(/```(\w*)\n?([\s\S]*?)```/g, (_, l, c) => { blocks.push(c.replace(/\n$/,'')); return '\u0000' + (blocks.length-1) + '\u0000'; });
-  s = s.replace(/`([^`\n]+)`/g,'<code>$1</code>')
-       .replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>')
-       .replace(/(^|\s)\*([^*\n]+)\*/g,'$1<em>$2</em>')
-       .split(/\n{2,}/).map(p => '<p>' + p.replace(/\n/g,'<br>') + '</p>').join('');
-  return s.replace(/\u0000(\d+)\u0000/g, (_, i) => '</p><pre><button class="copy" type="button">কপি</button><code>' + blocks[i] + '</code></pre><p>').replace(/<p><\/p>/g,'');
-}
-function scrollDown(){ chat.scrollTop = chat.scrollHeight; }
+            if (!prompt) return;
 
-function welcome(){
-  chat.innerHTML = '<div class="welcome"><h2>আজ কী জানতে চান?</h2><p>লিখুন, প্রশ্ন করুন, কোড চান — আমি এখানেই আছি।</p><div class="chips"></div></div>';
-  const box = chat.querySelector('.chips');
-  SUGGESTIONS.forEach(t => { const b = document.createElement('button'); b.className='chip'; b.textContent=t; b.onclick=()=>{input.value=t;askAI()}; box.appendChild(b); });
-}
+            // ইউজার মেসজ যোগ করা
+            const userMsgDiv = document.createElement('div');
+            userMsgDiv.className = 'flex justify-end space-x-2';
+            userMsgDiv.innerHTML = `
+                <div class="chat-bubble-user p-3 rounded-2xl max-w-xs md:max-w-md text-sm shadow-md">
+                    ${escapeHtml(prompt)}
+                </div>
+            `;
+            chatContainer.appendChild(userMsgDiv);
+            inputField.value = '';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
 
-function addMsg(role, text, cls){
-  chat.querySelector('.welcome')?.remove();
-  const m = document.createElement('div'); m.className = 'msg ' + role;
-  m.innerHTML = '<div class="av">' + (role==='bot'?'N':'আ') + '</div><div><div class="bubble ' + (cls||'') + '"></div></div>';
-  const b = m.querySelector('.bubble');
-  if(role==='user') b.textContent = text; else b.innerHTML = md(text);
-  chat.appendChild(m); scrollDown();
-  return {m, b};
-}
+            // লোডিং এলিমেন্ট তৈরি
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'flex items-start space-x-2';
+            loadingDiv.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold text-sm">N</div>
+                <div class="chat-bubble-ai p-3 rounded-2xl text-sm shadow-md text-gray-300 animate-pulse">
+                    টাইপ করছে...
+                </div>
+            `;
+            chatContainer.appendChild(loadingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
 
-function addTools(m, text){
-  const t = document.createElement('div'); t.className='tools';
-  t.innerHTML = '<button type="button" data-a="copy">কপি</button><button type="button" data-a="again">আবার বলো</button>';
-  t.onclick = e => {
-    const a = e.target.dataset.a;
-    if(a==='copy'){ navigator.clipboard?.writeText(text); e.target.textContent='কপি হয়েছে ✓'; setTimeout(()=>e.target.textContent='কপি',1500); }
-    if(a==='again'){ const last = [...history].reverse().find(h=>h.role==='user'); if(last && !busy){ input.value = last.text; askAI(); } }
-  };
-  m.lastElementChild.appendChild(t);
-}
+            try {
+                const response = await fetch(workerUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt })
+                });
 
-async function typewrite(el, text){
-  const step = Math.max(2, Math.ceil(text.length/180));
-  for(let i=step;i<text.length+step;i+=step){ el.innerHTML = md(text.slice(0,i)); scrollDown(); await new Promise(r=>setTimeout(r,14)); }
-  el.innerHTML = md(text); scrollDown();
-}
+                const data = await response.json();
 
-async function askAI(){
-  const prompt = input.value.trim();
-  if(!prompt || busy) return;
-  busy = true; sendBtn.disabled = true; input.value = ''; resize();
-  addMsg('user', prompt); history.push({role:'user', text:prompt});
+                // লোডিং মেসেজ নিরাপদে মুছে ফেলা
+                if (loadingDiv && loadingDiv.parentNode) {
+                    loadingDiv.parentNode.removeChild(loadingDiv);
+                }
 
-  const {m, b} = addMsg('bot', '');
-  b.innerHTML = '<div class="typing"><i></i><i></i><i></i></div>';
-  document.getElementById('statusTxt').textContent = 'চিন্তা করছি...';
+                if (data.reply) {
+                    const aiMsgDiv = document.createElement('div');
+                    aiMsgDiv.className = 'flex items-start space-x-2';
+                    aiMsgDiv.innerHTML = `
+                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold text-sm">N</div>
+                        <div class="chat-bubble-ai p-3 rounded-2xl max-w-xs md:max-w-md text-sm shadow-md">
+                            ${escapeHtml(data.reply)}
+                        </div>
+                    `;
+                    chatContainer.appendChild(aiMsgDiv);
+                } else {
+                    throw new Error(data.error || 'রেসপন্স পাওয়া যায়নি।');
+                }
+            } catch (error) {
+                if (loadingDiv && loadingDiv.parentNode) {
+                    loadingDiv.parentNode.removeChild(loadingDiv);
+                }
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'flex items-start space-x-2';
+                errorDiv.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center font-bold text-sm">N</div>
+                    <div class="bg-red-900 bg-opacity-50 p-3 rounded-2xl max-w-xs md:max-w-md text-sm shadow-md text-red-200">
+                        সার্ভারের সাথে কানেক্ট করা যায়নি। দয়া করে ইন্টারনেট ও লিঙ্ক চেক করুন।
+                    </div>
+                `;
+                chatContainer.appendChild(errorDiv);
+            }
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
 
-  try{
-    const res = await fetch(WORKER_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ prompt }) });
-    const data = await res.json();
-    const reply = data.reply || data.error || 'কোনো উত্তর পাওয়া যায়নি।';
-    if(!data.reply) b.classList.add('err');
-    await typewrite(b, reply);
-    history.push({role:'bot', text:reply}); addTools(m, reply);
-  }catch(err){
-    b.classList.add('err'); b.innerHTML = md('সার্ভারের সাথে কানেক্ট করা যায়নি। ইন্টারনেট ও ওয়ার্কার লিংক চেক করে আবার চেষ্টা করুন।');
-  }
-  document.getElementById('statusTxt').textContent = 'অনলাইন';
-  busy = false; sendBtn.disabled = false; input.focus();
-}
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
 
-function resize(){ input.style.height='auto'; input.style.height = Math.min(input.scrollHeight,160)+'px'; }
-input.addEventListener('input', resize);
-input.addEventListener('keydown', e => { if(e.key==='Enter' && !e.shiftKey && !e.isComposing){ e.preventDefault(); askAI(); } });
-sendBtn.onclick = askAI;
-document.getElementById('clearBtn').onclick = () => { if(busy) return; history = []; welcome(); };
-document.getElementById('themeBtn').onclick = () => {
-  const r = document.documentElement, n = r.dataset.theme === 'light' ? 'dark' : 'light'; r.dataset.theme = n;
-  try{ localStorage.setItem('nyx-theme', n); }catch(e){}
-};
-chat.addEventListener('click', e => {
-  if(e.target.classList.contains('copy')){ navigator.clipboard?.writeText(e.target.nextElementSibling.textContent); e.target.textContent='✓'; setTimeout(()=>e.target.textContent='কপি',1500); }
-});
-welcome();
-</script>
+        document.getElementById('user-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
 </body>
-</html>>
+</html>
